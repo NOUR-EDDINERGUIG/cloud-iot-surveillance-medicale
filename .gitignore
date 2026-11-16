@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+# Données générées par les conteneurs Docker
+influxdb/
+grafana/
+mosquitto/data/
+mosquitto/log/
+nodered/node_modules/
+nodered/.config*
+nodered/*.backup

@@ -1,0 +1,76 @@
+
+
+services:
+
+  # === Broker MQTT ===
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - iot-network
+
+  # === Node-RED (traitement + alertes) ===
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    restart: unless-stopped
+    user: "0"
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./nodered:/data
+    environment:
+      - TZ=Africa/Casablanca
+    networks:
+      - iot-network
+    depends_on:
+      - mosquitto
+
+  # === InfluxDB (base de données) ===
+  influxdb:
+    image: influxdb:2.0
+    container_name: influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./influxdb:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
+      - DOCKER_INFLUXDB_INIT_ORG=medical
+      - DOCKER_INFLUXDB_INIT_BUCKET=patients
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=montoken123
+    networks:
+      - iot-network
+
+  # === Grafana (dashboard) ===
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    networks:
+      - iot-network
+    depends_on:
+      - influxdb
+
+# === Réseau Docker ===
+networks:
+  iot-network:
+    driver: bridge
