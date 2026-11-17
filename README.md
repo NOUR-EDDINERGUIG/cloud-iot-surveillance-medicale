@@ -38,8 +38,6 @@ Grafana : http://localhost:3000 (source de données InfluxDB : `http://influxdb:
 ## Technologies
 Python · MQTT · Mosquitto · Node-RED · InfluxDB · Grafana · Docker Compose
 
-## Documentation
-Rapport complet : [`docs/rapport.pdf`](docs/rapport.pdf)
 
 ## Auteur
 Nour-eddine Rguig – Master IA & Data Science, Université Mohammed Premier Oujda
